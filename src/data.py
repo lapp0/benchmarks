@@ -57,8 +57,8 @@ json_cases = {
             "title": "Character",
             "type": "object",
         },
-        "samples": map(
-            json.dumps, json.load(open(SAMPLES_PATH / "rpg_characters.json"))
+        "samples": list(
+            map(json.dumps, json.load(open(SAMPLES_PATH / "rpg_characters.json")))
         ),
     },
     "Simple nested schema": {
@@ -94,8 +94,8 @@ json_cases = {
             },
             "required": ["id", "work", "recording_artists"],
         },
-        "samples": map(
-            json.dumps, json.load(open(SAMPLES_PATH / "recording_schema.json"))
+        "samples": list(
+            map(json.dumps, json.load(open(SAMPLES_PATH / "recording_schema.json")))
         ),
     },
 }

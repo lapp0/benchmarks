@@ -37,6 +37,9 @@ class LMFormatEnforcerRegex:
             for i in range(len(regex_sample_tokens)):
                 _ = token_enforcer.get_allowed_tokens(regex_sample_tokens[: i + 1])
 
+    def teardown(self, *args):
+        del self.tokenizer_data
+
 
 class LMFormatEnforcerJsonSchema:
     params = [models, json_cases.keys()]
@@ -66,3 +69,6 @@ class LMFormatEnforcerJsonSchema:
             json_sample_tokens = self.tokenizer.encode(json_sample)
             for i in range(len(json_sample_tokens)):
                 _ = token_enforcer.get_allowed_tokens(json_sample_tokens[: i + 1])
+
+    def teardown(self, *args):
+        del self.tokenizer_data

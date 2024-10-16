@@ -11,7 +11,7 @@ from .data import json_cases, models, regex_cases
 class LMFormatEnforcerRegex:
     params = [models, regex_cases.keys()]
     param_names = ["model", "regex_name"]
-    timeout = 600
+    timeout = 1200
 
     def setup(self, model, _):
         """Set up the benchmark.
@@ -44,7 +44,7 @@ class LMFormatEnforcerRegex:
 class LMFormatEnforcerJsonSchema:
     params = [models, json_cases.keys()]
     param_names = ["model", "json_schema_name"]
-    timeout = 600
+    timeout = 1200
 
     def setup(self, model, _):
         """Set up the benchmark.

@@ -11,8 +11,8 @@ from .data import json_cases, models, regex_cases
 
 
 class OutlinesRegex:
-    params = [models, regex_cases]
-    param_names = ["model", "regex"]
+    params = [models, regex_cases.keys()]
+    param_names = ["model", "regex_name"]
     timeout = 1200
 
     def setup(self, model, _):
@@ -28,7 +28,7 @@ class OutlinesRegex:
         self.tokenizer = TransformerTokenizer(self.tokenizer)
         RegexGuide("a", self.tokenizer)  # JIT-compile and convert the vocabulary
 
-    def time_outlines(self, _, regex):
+    def time_outlines(self, _, regex_name):
         """Measure generation time with Outlines.
 
         Outlines' generation time is split between compiling an index for each
@@ -37,19 +37,26 @@ class OutlinesRegex:
         """
         caching.clear_cache()
 
-        regex_string, regex_example = regex["regex"], regex["example"]
-        regex_example_tokens = self.tokenizer.encode(regex_example)[0][0]
+        regex_string = regex_cases[regex_name]["regex"]
+        regex_samples = regex_cases[regex_name]["samples"]
+
         guide = RegexGuide(regex_string, self.tokenizer)
 
-        state = 0
-        for token in regex_example_tokens:
-            _ = guide.get_next_instruction(state)
-            state = guide.get_next_state(state, token)
+        for regex_sample in regex_samples:
+            regex_sample_tokens = self.tokenizer.encode(regex_sample)[0][0]
+            state = guide.initial_state
+            for token in regex_sample_tokens:
+                _ = guide.get_next_instruction(state)
+                state = guide.get_next_state(state, token)
+
+    def teardown(self, *args):
+        caching.clear_cache()
 
 
 class OutlinesJsonSchema:
-    params = [models, json_cases]
-    param_names = ["model", "json"]
+    params = [models, json_cases.keys()]
+    param_names = ["model", "json_schema_name"]
+
     timeout = 1200
 
     def setup(self, model, _):
@@ -65,20 +72,25 @@ class OutlinesJsonSchema:
         self.tokenizer = TransformerTokenizer(self.tokenizer)
         RegexGuide("a", self.tokenizer)  # JIT-compile and convert the vocabulary
 
-    def time_outlines(self, _, json_case):
+    def time_outlines(self, _, json_schema_name):
         """Measure generation time with Outlines.
 
         Outlines' generation time is split between compiling an index for each
         regular expression, and walking this index while generating tokens.
 
         """
-        json_string, json_example = json_case["schema"], json_case["example"]
-        json_example_tokens = self.tokenizer.encode(json_example)[0][0]
+        json_string = json_cases[json_schema_name]["schema"]
+        json_samples = json_cases[json_schema_name]["samples"]
 
         regex_string = build_regex_from_schema(json.dumps(json_string))
         guide = RegexGuide(regex_string, self.tokenizer)
 
-        state = 0
-        for token in json_example_tokens:
-            _ = guide.get_next_instruction(state)
-            state = guide.get_next_state(state, token)
+        for json_sample in json_samples:
+            json_sample_tokens = self.tokenizer.encode(json_sample)[0][0]
+            state = guide.initial_state
+            for token in json_sample_tokens:
+                _ = guide.get_next_instruction(state)
+                state = guide.get_next_state(state, token)
+
+    def teardown(self, *args):
+        caching.clear_cache()

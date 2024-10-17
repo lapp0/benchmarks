@@ -54,8 +54,14 @@ class LMFormatEnforcerRegex(LMFormatEnforcerBenchmark):
         self._get_first_token(enforcer)
 
 
-class LMFormatEnforcerRegexRunTime(LMFormatEnforcerRegex):
+class LMFormatEnforcerRegexRunTime(LMFormatEnforcerBenchmark):
     """Class which warms-up enforcer in setup steps"""
+
+    _get_enforcer = LMFormatEnforcerRegex._get_enforcer
+
+    params = [models, regex_cases.keys()]
+    param_names = ["model", "regex_name"]
+    timeout = 1200
 
     def setup(self, model, regex_name):
         samples = regex_cases[regex_name]["samples"]
@@ -92,8 +98,14 @@ class LMFormatEnforcerJsonSchema(LMFormatEnforcerBenchmark):
         self._get_first_token(enforcer)
 
 
-class LMFormatEnforcerJsonSchemaRunTime(LMFormatEnforcerJsonSchema):
+class LMFormatEnforcerJsonSchemaRunTime(LMFormatEnforcerBenchmark):
     """Class which warms-up enforcer in setup steps"""
+
+    _get_enforcer = LMFormatEnforcerJsonSchema._get_enforcer
+
+    params = [models, json_cases.keys()]
+    param_names = ["model", "json_schema_name"]
+    timeout = 600
 
     def setup(self, model, json_schema_name):
         samples = json_cases[json_schema_name]["samples"]

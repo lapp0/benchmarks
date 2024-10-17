@@ -71,8 +71,12 @@ class OutlinesRegex(OutlinesBenchmark):
         self._get_first_token(guide)
 
 
-class OutlinesRegexRunTime(OutlinesRegex):
+class OutlinesRegexRunTime(OutlinesBenchmark):
     """Class which warms-up Guide in setup steps"""
+
+    params = [models, regex_cases.keys()]
+    param_names = ["model", "regex_name"]
+    timeout = 1200
 
     def setup(self, model, regex_name):
         samples = regex_cases[regex_name]["samples"]
@@ -111,8 +115,14 @@ class OutlinesJsonSchema(OutlinesBenchmark):
         self._get_first_token(guide)
 
 
-class OutlinesJsonSchemaRunTime(OutlinesJsonSchema):
+class OutlinesJsonSchemaRunTime(OutlinesBenchmark):
     """Class which warms-up Guide in setup steps"""
+
+    json_from_regex_fn = lambda self, schema: build_regex_from_schema(schema)
+
+    params = [models, json_cases.keys()]
+    param_names = ["model", "json_schema_name"]
+    timeout = 1200
 
     def setup(self, model, json_schema_name):
         samples = json_cases[json_schema_name]["samples"]
